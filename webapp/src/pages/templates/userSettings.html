@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../userSettings.js"></script>
+    <title>User Settings</title>
+</head>
+<body>
+    <nav>
+        <a href="./index.html">Home</a>
+        <a href="./restaurants.html">Places</a>
+        <a href="#" id="logout-link">Log Out</a>
+    </nav>
+
+    <main>
+        <section id="user-presentation"></section>
+
+        <hr>
+        <section id="user-primary-info">
+            <form id="user-primary-form" method="post">
+                <label for="name">Name: </label>
+                <input type="text" id="name" name="name"><br>
+
+                <label for="surname">Surname: </label>
+                <input type="text" name="surname" id="surname"><br>
+
+                <label for="email">Email: </label>
+                <input type="email" id="email" name="email"><br>
+
+                <button type="submit">Send</button><br>
+            </form>
+        </section>
+
+        <hr>
+        <section id="user-change-password">
+            <form id="user-password-form" method="post">
+                <label for="password1">Password: </label>
+                <input type="password" name="password1" id="password1" autocomplete="off" minlength="9" maxlength="80" required><br>
+
+                <label for="password2">Confirm Password: </label>
+                <input type="password" name="password2" id="password2" autocomplete="off" minlength="9" maxlength="80" required><br>
+
+                <button type="submit">Send</button>
+            </form>
+        </section>
+        <hr>
+
+        <section id="user-bookings"></section>
+        <hr>
+
+        <section id="user-restaurants">
+            <article id="u-restaurant-info"></article>
+            <form id="restaurant-form" method="post">
+                    <label for="u-restaurant-name">Restaurant Name</label>
+                    <input type="text" name="u-restaurant-name" id="u-restaurant-name">
+                    
+                    <button type="submit">Send</button>
+                </form>
+        </section>
+    </main>
+</body>
+</html>
+
+
