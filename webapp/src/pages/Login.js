@@ -1,12 +1,12 @@
 import { validatePasswords} from '../utils/Utils.js';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('signin-form');
 
-    form.addEventListener('submit', function(event) {
+    const handleFormSubmission = async (event) => {
         event.preventDefault();
 
-        const username = document.getElementById('username').value;
+        const username = document.getElementById('username').value.trim;
         const password1 = document.getElementById('password1').value;
         const password2 = document.getElementById('password2').value;
 
@@ -17,33 +17,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const userData = {
             username: username,
-            hashed_password: password1
+            hashed_password: password1 // Hash password ideally
         }
 
-        fetch('http://localhost:8080/api/generate-token/', {
-            method: 'POST',
-            body: JSON.stringify(userData),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include' 
-        })
-        .then(response => {
+        try {
+            const response = await fetch('http://localhost:8080/api/generate-token/', {
+                method : 'POST',
+                body: JSON.stringify(userData),
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
             if (!response.ok) {
-                throw new Error('Failed to get a token, please check Login credentials');
+
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+               
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data)
+
+            const data = await response.json();
+
+            console.log(data);
+
             localStorage.setItem('jwtToken', data.token);
             form.reset();
+
+            localStorage.setItem('jwtToken', data.token);
             window.location.href = "./index.html";
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error:', error);
             alert('Something went wrong, please try again.');
-        });
-    });
+        }
+
+    };
+
+    form.addEventListener('submit', handleFormSubmission);
+
 });
 
+       
