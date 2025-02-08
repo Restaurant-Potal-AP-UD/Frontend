@@ -1,4 +1,4 @@
-import { validatePasswords} from '../utils/Utils.js';
+import { validatePasswords} from '../../../utils/Utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('signin-form');

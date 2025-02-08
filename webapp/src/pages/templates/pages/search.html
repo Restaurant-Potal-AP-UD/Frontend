@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../Search.js"></script>
+    <title>Restaurant Search</title>
+    <link rel="stylesheet" href="../css/search.css">
+    
+</head>
+<body>
+    <nav>
+        <a href="./index.html">Home</a>
+        <a href="./userPage.html">My Profile</a>
+        <a href="./index.html">Log Out</a>
+    </nav>
+
+<div class = "container">
+    <main>
+        <form id="search-form">
+            <div>
+                <label for="restaurant-name">Restaurant Name:</label>
+                <input type="text" id="restaurant-name" name="restaurant-name" placeholder="Enter restaurant name">
+            </div>
+            <div>
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" placeholder="Enter location">
+            </div>
+            <button type="submit">Search</button>
+        </form>
+    </main>
+</div>
+
+ <div class = "container">
+        <section id="results">
+            <h2>Results</h2>
+            <ul id = "restaurant-list">
+                <article class = "about__icons">
+                    <img src = "../images/reservation.svg" class = "about__icon">
+                    <h3 class = "about__title">Restaurant</h3> 
+                    <p class = "about__paragraph">Lorem ipsum dolor elit. Enam debitis! Doloremque, voluptas.</p>
+                </article>
+                <article class = "about__icons">
+                    <img src = "../images/reservation.svg" class = "about__icon">
+                    <h3 class = "about__title">Restaurant</h3> 
+                    <p class = "about__paragraph">Lorem ipsum dolor elit. Enam debitis! Doloremque, voluptas.</p>
+                </article>
+                <article class = "about__icons">
+                    <img src = "../images/reservation.svg" class = "about__icon">
+                    <h3 class = "about__title">Restaurant</h3> 
+                    <p class = "about__paragraph">Lorem ipsum dolor elit. Enam debitis! Doloremque, voluptas.</p>
+                </article>
+
+            </ul> 
+        </section>
+
+</div>
+    
+</body>
+</html>

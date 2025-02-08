@@ -5,7 +5,7 @@ import {
     handleFormSubmit,
     updateDOMElement,
     listShow,
-} from "../utils/Utils.js";
+} from "../../../utils/Utils.js";
   
 document.addEventListener("DOMContentLoaded", async function () {
     let username;
