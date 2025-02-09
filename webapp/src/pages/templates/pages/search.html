@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="../Search.js"></script>
+    <script type="module" src="../JS/Search.js"></script>
     <title>Restaurant Search</title>
+    <link rel = "stylesheet" href="../css/normalize.css">
     <link rel="stylesheet" href="../css/search.css">
+    <link rel = "stylesheet" href="../css/styles.css">
     
 </head>
 <body>
     <nav>
-        <a href="./index.html">Home</a>
+        <a href="./home.html">Home</a>
         <a href="./userPage.html">My Profile</a>
-        <a href="./index.html">Log Out</a>
+        <a href="./home.html">Log Out</a>
     </nav>
 
 <div class = "container">
     <main>
+        <section class = "knowledge"> <!- This is the search form, by name and location restaurant ->
         <form id="search-form">
             <div>
                 <label for="restaurant-name">Restaurant Name:</label>
@@ -28,33 +31,20 @@
             </div>
             <button type="submit">Search</button>
         </form>
+
     </main>
-</div>
-
- <div class = "container">
-        <section id="results">
-            <h2>Results</h2>
-            <ul id = "restaurant-list">
-                <article class = "about__icons">
-                    <img src = "../images/reservation.svg" class = "about__icon">
-                    <h3 class = "about__title">Restaurant</h3> 
-                    <p class = "about__paragraph">Lorem ipsum dolor elit. Enam debitis! Doloremque, voluptas.</p>
-                </article>
-                <article class = "about__icons">
-                    <img src = "../images/reservation.svg" class = "about__icon">
-                    <h3 class = "about__title">Restaurant</h3> 
-                    <p class = "about__paragraph">Lorem ipsum dolor elit. Enam debitis! Doloremque, voluptas.</p>
-                </article>
-                <article class = "about__icons">
-                    <img src = "../images/reservation.svg" class = "about__icon">
-                    <h3 class = "about__title">Restaurant</h3> 
-                    <p class = "about__paragraph">Lorem ipsum dolor elit. Enam debitis! Doloremque, voluptas.</p>
-                </article>
-
-            </ul> 
-        </section>
 
 </div>
-    
+
+<div class = "about__main"> 
+    <article class = "about__icons">
+        <a href = "./restaurant.html">
+        <img src = "../images/restaurant.svg" class = "about__icon">
+        </a>
+        <h3 class = "about__title">restaurant1</h3>    
+    </article>
+</div>
+
+
 </body>
 </html>

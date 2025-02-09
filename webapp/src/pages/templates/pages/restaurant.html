@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../JS/Reservation.js"></script>
+    <link rel = "stylesheet" href="../css/normalize.css">
+    <link rel = "stylesheet" href="../css/restaurant.css">
+    <link rel = "stylesheet" href="../css/styles.css">
+
+    <title>Restaurants</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav>
+        <a href="./home.html">Home</a>
+        <a href="./search.html">Find Restaurants</a>
+        <a href="./userPage.html">My Profile</a>
+        <a href="./home.html">Log Out</a>
+    </nav>
+    
+
+    <div class="container">
+        <div class="box"> 
+            <h2>Restaurant Name</h2>
+            <p>Services provided by the restaurant.</p>
+
+            <h3>Reviews</h3>
+
+            <p>Comments</p>
+
+
+            <label for="example-input">Add a Comment</label>
+            <input type="text" id="example-input" name="example-input">
+
+            <button type="submit" class="submit-btn">Send review</button>
+        </div>
+
+        <div class="box"> 
+        
+            <h2>Reservations</h2>
+            <p>Restaurant description.</p>
+        
+            <h3>Address</h3>
+                
+                <p>Avenue 456, City, Country</p>
+
+                <h3>Reservation</h3>
+                <label for="datetime">Datetime</label>
+                <input type="datetime-local" id="datetime" name="datetime">
+    
+                <label for="assistants">Assistants number</label>
+                <input type="number" id="assistants" name="assistants">
+    
+                <button type="submit" class="submit-btn">Complete Reservation</button>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -49,7 +49,6 @@
             }
         }
 
-
         async handleLogout() {
             localStorage.removeItem("jwtToken");
             window.location.reload(); // Añadir esta línea para refrescar la página
