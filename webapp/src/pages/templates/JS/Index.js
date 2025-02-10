@@ -14,7 +14,7 @@
             try {
                 const token = localStorage.getItem("jwtToken")
 
-                if (token) {
+                if (token != null) {
 
                     const authResponse = await fetch('http://localhost:8080/api/verify-token/', {
                         method: 'GET',
@@ -29,15 +29,17 @@
                     this.navElement.innerHTML = `
                         <a href="./restaurants.html">Places</a>
                         ${isAuthenticated 
-                            ? `<a href="./userSettings.html" id="settings">Settings</a>
+                            ? `<a href="./userPage.html" id="settings">Settings</a>
                             <a href="#" id="logout">Log Out</a>`
-                            : `<a href="./login.html" id="signup">Sign Up</a>`}
+                            : `<a href="./register.html" id="signup">Sign Up</a> <a href="./login.html" id="signup">Sign in</a>`                            
+                            }
                     `;
                 } else {
                     console.error('JWT cookie not found');
                     this.navElement.innerHTML = `
+                            <a href="./login.html" id="signup">Sign in</a>
                         <a href="./restaurants.html">Places</a>
-                        <a href="./login.html" id="signup">Sign Up</a>
+                        <a href="./register.html" id="signup">Sign Up</a>
                     `;
                 }
             } catch (error) {

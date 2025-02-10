@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href="../css/normalize.css">
+    <link rel = "stylesheet" href="../css/restaurant.css">
+    <link rel = "stylesheet" href="../css/styles.css">
+
+    <title>Restaurants</title>
+</head>
+<body>
+    <nav id="nav-menu">
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const navMenu = document.getElementById("nav-menu");
+                const token = localStorage.getItem("jwtToken");
+
+                navMenu.innerHTML = "";
+
+                if (token) {
+                    navMenu.innerHTML = `
+                        <a href="./home.html">Home</a>
+                        <a href="./userPage.html">Settings</a>
+                        <a href="./home.html" id="logout-btn">Logout</a>
+                    `;
+
+                    document.getElementById("logout-btn").addEventListener("click", function () {
+                        localStorage.removeItem("jwtToken"); 
+                        location.reload(); 
+                    });
+                } else {
+                    navMenu.innerHTML = `
+                        <a href="./home.html">Home</a>
+                        <a href="./login.html">Sign in</a>
+                        <a href="./register.html">Sign up</a>
+                    `;
+                }
+            });
+        </script>
+    </nav>
+
+    <div class="container">
+        <div id="restaurant-list"></div>
+    </div>
+
+    <script type="module">
+    import { fetchWithError } from '../../../utils/Utils.js';
+    
+    document.addEventListener("DOMContentLoaded", async function () {
+        const restaurantListContainer = document.getElementById("restaurant-list");
+        const apiUrl = 'http://localhost:8081/api/get/restaurant/all';
+    
+        try {
+            const restaurants = await fetchWithError(apiUrl);
+            console.log(restaurants);
+            if (!restaurants.length) {
+                restaurantListContainer.innerHTML = "<p>No restaurants available.</p>";
+                return;
+            }
+    
+            restaurantListContainer.innerHTML = restaurants.map(restaurant => `
+                <div class="box" data-name="${restaurant.restaurant_name}">
+                    <h2>${restaurant.restaurant_name}</h2>
+                    <p>${restaurant.restaurant_owner}</p>
+                    
+                    <h3>Addresses</h3>
+                    <ul>
+                        ${restaurant.restaurant_addresses?.map(address => address ? `<li>${address}</li>` : "<li>Not available</li>").join('')}
+                    </ul>
+                    
+                    <h3>Reviews</h3>
+                    <p>Comments</p>
+                    <label for="comment-${restaurant.restaurant_id}">Add a comment</label>
+                    <input type="text" id="comment-${restaurant.restaurant_id}" name="comment">
+                    <button type="submit" class="submit-btn">Submit review</button>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll(".box").forEach(box => {
+                box.addEventListener("click", function () {
+                    const restaurantName = encodeURIComponent(this.dataset.name);
+                    window.location.href = `./restaurant.html?${restaurantName}`;
+                });
+            });
+        } catch (error) {
+            restaurantListContainer.innerHTML = `<p>Error loading restaurants: ${error.message}</p>`;
+        }
+    });
+    </script>
+</body>
+</html>

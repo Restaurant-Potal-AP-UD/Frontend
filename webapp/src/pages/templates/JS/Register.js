@@ -1,5 +1,3 @@
-import { validatePasswords } from '../../../utils/Utils.js';
-
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('signup-form');
 
@@ -9,12 +7,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const password1 = document.getElementById('password1').value;
         const password2 = document.getElementById('password2').value;
 
-        if (!validatePasswords(password1, password2)) {
+        if (password1 != password2) {
             alert("Passwords do not match.");
             return;
         }
 
-        
         const userData = {
             name: document.getElementById('name').value,
             surname: document.getElementById('surname').value,
@@ -23,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
             password: password1
         };
 
-        
         fetch('http://localhost:8080/api/post-user/', {
             method: 'POST',
             headers: {
@@ -31,24 +27,23 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(userData) 
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to register: ' + response.statusText);
+        .then(async response => {
+            const data = await response.json(); // Leer el cuerpo de la respuesta
+
+            if (response.status !== 201) {
+                throw new Error(data.error || 'Error desconocido en el servidor');
             }
-            return response.json();
+
+            return data;
         })
         .then(data => {
-            if (data.success) {
-                alert('Registration successful!');
-                form.reset(); 
-                window.location.href = "./index.html"
-            } else {
-                alert('Error: ' + data.error);
-            }
+            alert('Registration successful!');
+            form.reset(); 
+            window.location.href = "./home.html";
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            console.error('Error:', error.message);
+            alert('An error occurred: ' + error.message);
         });
     });
 });

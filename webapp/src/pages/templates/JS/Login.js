@@ -1,24 +1,24 @@
-import { validatePasswords} from '../../../utils/Utils.js';
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('signin-form');
 
     const handleFormSubmission = async (event) => {
         event.preventDefault();
 
-        const username = document.getElementById('username').value.trim;
+        const username1 = document.getElementById('username').value;
         const password1 = document.getElementById('password1').value;
         const password2 = document.getElementById('password2').value;
 
-        if (!validatePasswords(password1, password2)) {
-            alert('Las contraseñas no coinciden');
+        if (password1 != password2) {
+            alert('Password Mismatch');
             return;
         }
 
         const userData = {
-            username: username,
+            username: username1,
             hashed_password: password1 // Hash password ideally
         }
+
+        console.log(JSON.stringify(userData))
 
         try {
             const response = await fetch('http://localhost:8080/api/generate-token/', {
@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers:{
                     'Content-Type': 'application/json'
                 },
-                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -40,11 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log(data);
 
-            localStorage.setItem('jwtToken', data.token);
+            localStorage.setItem('jwtToken', ("Bearer" + data.token));
             form.reset();
 
             localStorage.setItem('jwtToken', data.token);
-            window.location.href = "./index.html";
+            window.location.href = "./home.html";
         } catch (error) {
             console.error('Error:', error);
             alert('Something went wrong, please try again.');

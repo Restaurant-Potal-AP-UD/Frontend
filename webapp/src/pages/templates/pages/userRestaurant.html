@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Info</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/userPage.css">
+</head>
+    <nav>
+        <a href="./home.html">Home</a>
+        <a href="./search.html">Find Restaurants</a>
+        <a href="#" id="logout-link">Log Out</a>
+    </nav>
+<body>
+    <div class="container">
+        <main id="restaurant-info">
+            <h1 id="restaurant-name"></h1>
+            <hr>
+            <p><strong>Owner:</strong> <span id="restaurant-owner"></span></p>
+        </main>
+        
+        <section id="address-section">
+            <h3>Addresses</h3>
+            <div id="addresses-container"></div>
+        </section>
+        
+        <!-- Sección de reservas agregada -->
+        <section id="bookings-section">
+            <h3>Bookings</h3>
+            <div id="bookings-container"></div>
+        </section>
+    </div>
+    
+    <section id="address-form-section">
+        <h3>Add New Address</h3>
+        <form id="address-form">
+            <label for="street">Street</label>
+            <input type="text" id="street" required>
+            
+            <label for="city">City</label>
+            <input type="text" id="city" required>
+            
+            <label for="state">State</label>
+            <input type="text" id="state" required>
+            
+            <label for="zip_code">Zip Code</label>
+            <input type="text" id="zip_code" required>
+            
+            <label for="location">Location</label>
+            <input type="text" id="location" required>
+            
+            <label for="country">Country</label>
+            <input type="text" id="country" required>
+            
+            <button type="submit">Add Address</button>
+        </form>
+    </section>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const firstParam = Object.keys(Object.fromEntries(urlParams))[0];
+            const token = localStorage.getItem("jwtToken");
+            
+            const apiBase = "http://localhost:8081/api";
+            
+            try {
+                const response = await fetch(`${apiBase}/get/restaurant/${firstParam}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById("restaurant-name").textContent = data.restaurant_name;
+                    document.getElementById("restaurant-owner").textContent = data.restaurant_owner_name;
+                    
+                    loadAddresses(firstParam, token);
+                    loadBookings(firstParam, token);
+                } else {
+                    alert("Failed to load restaurant data.");
+                }
+            } catch (error) {
+                console.error("Error fetching restaurant:", error);
+            }
+            
+            document.getElementById("address-form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                
+                const newAddress = {
+                    street: document.getElementById("street").value,
+                    city: document.getElementById("city").value,
+                    state: document.getElementById("state").value,
+                    zip_code: document.getElementById("zip_code").value,
+                    location: document.getElementById("location").value,
+                    country: document.getElementById("country").value,
+                    restaurant_name: firstParam
+                };
+                
+                try {
+                    const response = await fetch(`${apiBase}/restaurant/create/address/${firstParam}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify(newAddress)
+                    });
+                    
+                    if (response.ok) {
+                        loadAddresses(firstParam, token);
+                        document.getElementById("address-form").reset();
+                    } else {
+                        alert("Failed to add address.");
+                    }
+                } catch (error) {
+                    console.error("Error adding address:", error);
+                }
+            });
+        });
+
+        async function loadBookings(restaurantName, token) {
+            const apiBase = "http://localhost:8081/api";
+            const container = document.getElementById("bookings-container");
+
+            if (!container) {
+                console.error("Error: Element with ID 'bookings-container' not found.");
+                return;
+            }
+
+            container.innerHTML = "";
+            
+            try {
+                const response = await fetch(`${apiBase}/get/booking/restaurant/${restaurantName}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const bookings = await response.json();
+                    
+                    if (bookings.length === 0) {
+                        container.innerHTML = "<p>No bookings available.</p>";
+                        return;
+                    }
+
+                    bookings.forEach(booking => {
+                        const div = document.createElement("div");
+                        div.classList.add("booking-card");
+                        div.innerHTML = `
+                            <p><strong>Date:</strong> ${booking.booking_date}</p>
+                            <p><strong>People:</strong> ${booking.people}</p>
+                            <p><strong>Code:</strong> ${booking.code}</p>
+                            <p><strong>Customer:</strong> ${booking.customer}</p>
+                        `;
+                        container.appendChild(div);
+                    });
+                } else {
+                    container.innerHTML = "<p>Failed to load bookings.</p>";
+                }
+            } catch (error) {
+                console.error("Error fetching bookings:", error);
+                container.innerHTML = "<p>Error loading bookings. Please try again later.</p>";
+            }
+        }
+
+        async function loadAddresses(restaurantName, token) {
+            const apiBase = "http://localhost:8081/api";
+            const container = document.getElementById("addresses-container");
+            container.innerHTML = "";
+            
+            try {
+                const response = await fetch(`${apiBase}/restaurant/read/address/${restaurantName}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const addresses = await response.json();
+                    
+                    if (addresses.length === 0) {
+                        container.innerHTML = "<p>No addresses have been added yet.</p>";
+                        return;
+                    }
+
+                    addresses.forEach(addr => {
+                        const div = document.createElement("div");
+                        div.classList.add("booking-card");
+                        div.innerHTML = `
+                            <p><strong>Street:</strong> ${addr.street}</p>
+                            <p><strong>City:</strong> ${addr.city}</p>
+                            <p><strong>State:</strong> ${addr.state}</p>
+                            <p><strong>Zip Code:</strong> ${addr.zip_code}</p>
+                            <p><strong>Location:</strong> ${addr.location}</p>
+                            <p><strong>Country:</strong> ${addr.country}</p>
+                            <button onclick="deleteAddress('${restaurantName}', '${addr.id}')">Delete</button>
+                        `;
+                        container.appendChild(div);
+                    });
+                } else {
+                    container.innerHTML = "<p>Failed to load addresses.</p>";
+                }
+            } catch (error) {
+                console.error("Error fetching addresses:", error);
+                container.innerHTML = "<p>Error loading addresses. Please try again later.</p>";
+            }
+        }
+
+         async function deleteAddress(restaurantName, addressId) {
+            const apiBase = "http://localhost:8081/api";
+            const token = localStorage.getItem("jwtToken");
+            console.log(addressId)    
+            try {
+                const response = await fetch(`${apiBase}/restaurant/delete/address/${restaurantName}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(addressId)
+                });
+                
+                if (response.ok) {
+                    loadAddresses(restaurantName, token);
+                } else {
+                    alert("Failed to delete address.");
+                }
+            } catch (error) {
+                console.error("Error deleting address:", error);
+            }
+        }
+
+        document.getElementById("logout-link").addEventListener("click", function(event) {
+            event.preventDefault();
+            localStorage.removeItem("jwtToken");
+            window.location.href = "./home.html";
+        });
+    </script>
+</body>
+</html>

@@ -1,70 +1,163 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="../JS/userPage.js"></script>
-    <link rel = "stylesheet" href="../css/normalize.css">
-    <link rel = "stylesheet" href="../css/userPage.css">
-    <link rel = "stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/userPage.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <title>User Settings</title>
-
 </head>
 <body>
     <nav>
         <a href="./home.html">Home</a>
         <a href="./search.html">Find Restaurants</a>
-        <a href="./home.html">Log Out</a>
+        <a href="#" id="logout-link">Log Out</a>
     </nav>
 
-    <div class = "container">
-        
-    <main>
-        <section id="user-presentation"> </section>
-        <h4>User Information</h4>
-        <hr>   
-        <section id="user-primary-info">
+    <div class="container">
+        <main>
+            <h4>User Information</h4>
+            <section id="user-presentation">
+                <h2 id="user-name-display"></h2>
+                <p id="user-email-display"></p>
+            </section>
 
-            <label for="name">Name: </label>
-            <input type="text" id="name" name="name" readonly><br>
+            <hr>   
 
-            <label for="surname">Surname: </label>
-            <input type="text" name="surname" id="surname" readonly><br>
+            <section id="user-primary-info">
+                <form id="user-info-form">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required><br>
 
-            <label for="email">Email: </label>
-            <input type="email" id="email" name="email" readonly><br>
-        </section>
+                    <label for="surname">Surname:</label>
+                    <input type="text" id="surname" name="surname" required><br>
 
-        <hr>
-        <section id="user-change-password">
-            <form id="user-password-form" method="post">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required><br>
 
-                <label for="user-change-password">Change password</label><br>
-                <label for="password1">Password: </label>
-                <input type="password" name="password1" id="password1" autocomplete="off" minlength="9" maxlength="80" required><br>
+                    <button type="submit">Save Changes</button>
+                </form>
+            </section>
 
-                <label for="password2">Confirm Password: </label>
-                <input type="password" name="password2" id="password2" autocomplete="off" minlength="9" maxlength="80" required><br>
-                <button type="submit">Send</button>
-            </form>
-        </section>
-    </main>
-
-           
-        <section id="user-bookings">
-            <h4>User Bookings</h4>
             <hr>
-            <article id="u-restaurant-info"></article>
-            <form id="restaurant-form" method="post">
-                <label for="u-restaurant-name">Restaurant Name</label>
-                <input type="text" name="u-restaurant-name" id="u-restaurant-name">
-                
-                
-            </form>
-        </section>
 
+            <section id="user-change-password">
+                <form id="user-password-form">
+                    <label for="password1">New Password:</label>
+                    <input type="password" id="password1" name="password1" required><br>
+
+                    <label for="password2">Confirm Password:</label>
+                    <input type="password" id="password2" name="password2" required><br>
+
+                    <button type="submit">Change Password</button>
+                </form>
+            </section>
+
+            <hr>
+
+            <section id="user-bookings">
+                <h4>My Reservations</h4>
+                <ul id="bookings-list">
+                    <li>Loading bookings...</li>
+                </ul>
+            </section>
+        </main>
+
+        <aside id="restaurant-section">
+            <div id="restaurant-container"></div>
+        </aside>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            checkUserRestaurant();
+
+            function checkUserRestaurant() {
+                fetch("http://localhost:8081/api/get/restaurant/", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+                    }
+                })
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else if (response.status === 404) {
+                        showRestaurantForm();
+                        return null;
+                    } else {
+                        throw new Error("Error checking restaurant status");
+                    }
+                })
+                .then(data => {
+                    if (data) {
+                        showRestaurantRedirectButton(data.restaurant_name);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching restaurant data:", error);
+                });
+            }
+
+            function showRestaurantRedirectButton(restaurantName) {
+                const restaurantContainer = document.getElementById("restaurant-container");
+                restaurantContainer.innerHTML = `
+                    <h4>My Restaurant</h4>
+                    <p>${restaurantName}</p>
+                    <button id="go-to-restaurant">Go to My Restaurant</button>
+                `;
+                document.getElementById("go-to-restaurant").addEventListener("click", () => {
+                    window.location.href = `./userRestaurant.html?${restaurantName}`;
+                });
+            }
+
+            function showRestaurantForm() {
+                const restaurantContainer = document.getElementById("restaurant-container");
+                restaurantContainer.innerHTML = `
+                    <h4>Register Your Restaurant</h4>
+                    <form id="restaurant-form">
+                        <label for="restaurant_name">Restaurant Name:</label>
+                        <input type="text" id="restaurant_name" name="restaurant_name" required>
+                        <button type="submit">Register</button>
+                    </form>
+                `;
+                document.getElementById("restaurant-form").addEventListener("submit", registerRestaurant);
+            }
+
+            function registerRestaurant(event) {
+                event.preventDefault();
+                
+                const restaurantName = document.getElementById("restaurant_name").value;
+                
+                fetch("http://localhost:8081/api/create/restaurant/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+                    },
+                    body: JSON.stringify({ restaurant_name: restaurantName })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("Failed to register restaurant");
+                    return response.json();
+                })
+                .then(data => {
+                    alert("Restaurant registered successfully!");
+                    checkUserRestaurant(); 
+                })
+                .catch(error => {
+                    console.error("Error registering restaurant:", error);
+                    alert("Error registering restaurant. Try again.");
+                });
+            }
+        });
+        
+        document.getElementById("logout-link").addEventListener("click", function(event) {
+            event.preventDefault();
+            localStorage.removeItem("jwtToken");
+            window.location.href = "./home.html";
+        });
+    </script>
 </body>
 </html>
-
-

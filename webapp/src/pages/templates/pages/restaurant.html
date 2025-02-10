@@ -3,60 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="../JS/Reservation.js"></script>
-    <link rel = "stylesheet" href="../css/normalize.css">
-    <link rel = "stylesheet" href="../css/restaurant.css">
-    <link rel = "stylesheet" href="../css/styles.css">
-
-    <title>Restaurants</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Restaurant Information</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+    <nav id="nav-menu"></nav>
 
-    <nav>
-        <a href="./home.html">Home</a>
-        <a href="./search.html">Find Restaurants</a>
-        <a href="./userPage.html">My Profile</a>
-        <a href="./home.html">Log Out</a>
-    </nav>
-    
+    <div class="loading" id="loading">Loading restaurant information...</div>
+    <div class="error-message" id="error"></div>
+    <div class="restaurant-info" id="restaurantInfo"></div>
+    <div id="reservationFormContainer"></div>
 
-    <div class="container">
-        <div class="box"> 
-            <h2>Restaurant Name</h2>
-            <p>Services provided by the restaurant.</p>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const navMenu = document.getElementById("nav-menu");
+            const token = localStorage.getItem("jwtToken");
+            
+            navMenu.innerHTML = token ? `
+                <a href="./home.html">Home</a>
+                <a href="./userPage.html">Settings</a>
+                <a href="#" id="logout-btn">Logout</a>
+            ` : `
+                <a href="./home.html">Home</a>
+                <a href="./login.html">Sign in</a>
+                <a href="./register.html">Sign up</a>
+            `;
 
-            <h3>Reviews</h3>
+            if (token) {
+                document.getElementById("logout-btn").addEventListener("click", function () {
+                    localStorage.removeItem("jwtToken"); 
+                    location.reload(); 
+                });
+            }
+        });
+    </script>
 
-            <p>Comments</p>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const restaurantInfo = document.getElementById('restaurantInfo');
+            const reservationFormContainer = document.getElementById('reservationFormContainer');
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const firstParam = Object.keys(Object.fromEntries(urlParams))[0];
 
-            <label for="example-input">Add a Comment</label>
-            <input type="text" id="example-input" name="example-input">
-
-            <button type="submit" class="submit-btn">Send review</button>
-        </div>
-
-        <div class="box"> 
-        
-            <h2>Reservations</h2>
-            <p>Restaurant description.</p>
-        
-            <h3>Address</h3>
+            try {
+                loading.style.display = 'block';
                 
-                <p>Avenue 456, City, Country</p>
+                if (!firstParam) {
+                    throw new Error('No restaurant selected');
+                }
 
-                <h3>Reservation</h3>
-                <label for="datetime">Datetime</label>
-                <input type="datetime-local" id="datetime" name="datetime">
-    
-                <label for="assistants">Assistants number</label>
-                <input type="number" id="assistants" name="assistants">
-    
-                <button type="submit" class="submit-btn">Complete Reservation</button>
-        </div>
+                const response = await fetch(`http://localhost:8081/api/get/restaurant/${firstParam}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch restaurant information');
+                }
 
-    </div>
+                const data = await response.json();
+                
+                // Create HTML content from restaurant data
+                const content = `
+                    <h2>${data.restaurant_name || 'Restaurant Name Not Available'}</h2>
+                    ${Object.entries(data)
+                        .filter(([key]) => key !== 'restaurant_name')
+                        .map(([key, value]) => 
+                            `<div class="info-item">
+                                <span class="info-label">${key.replace(/_/g, ' ')}:</span>
+                                <span class="info-value">${value}</span>
+                            </div>`
+                        ).join('')}
+                `;
+                
+                restaurantInfo.innerHTML = content;
 
+                // Only show reservation form if firstParam exists
+                if (firstParam) {
+                    reservationFormContainer.innerHTML = `
+                        <div class="box reservation-form">
+                            <hr>
+                            <h3>Make a Reservation</h3>
+                            <form id="reservationForm" method="post">
+                                <div class="form-group">
+                                    <label for="datetime">Select Date and Time</label>
+                                    <input type="datetime-local" id="datetime" name="datetime" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="assistants">Number of Guests</label>
+                                    <input type="number" id="assistants" name="assistants" min="1" required>
+                                </div>
+
+                                <button type="submit" class="submit-btn">Complete Reservation</button>
+                            </form>
+                        </div>
+                    `;
+
+                    // Add event listener for the reservation form
+                    document.getElementById('reservationForm').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        
+                        const datetime = document.getElementById('datetime').value;
+                        const assistants = document.getElementById('assistants').value.trim();
+                        
+                        if (!datetime || !assistants || parseInt(assistants) <= 0) {
+                            alert("Please provide valid reservation details.");
+                            return;
+                        }
+
+                        // Convert datetime to the desired format
+                        const formattedDate = datetime.replace("T", "/").replace(/-/g, "/");
+
+                        const userData = {
+                            booking_date: formattedDate,
+                            people: assistants
+                        };
+
+                        try {
+                            const response = await fetch(`http://localhost:8081/api/post/booking/user/${firstParam}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+                                },
+                                body: JSON.stringify(userData),
+                            });
+
+                            if (response.status !== 201) {
+                                const errorData = await response.json();
+                                throw new Error(`Failed to save reservation. Status: ${response.status}, Response: ${JSON.stringify(errorData)}`);
+                            }
+
+                            alert("Reservation successfully completed!");
+                            e.target.reset();
+                        } catch (error) {
+                            console.error("Failed to complete reservation:", error);
+                            alert("An error occurred. Please try again.");
+                        }
+                    });
+                }
+            } catch (err) {
+                error.textContent = 'Error loading restaurant information: ' + err.message;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

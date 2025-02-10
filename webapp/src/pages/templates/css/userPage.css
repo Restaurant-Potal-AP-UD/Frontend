@@ -1,31 +1,77 @@
 /* Importar fuente moderna */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
+/* Main container layout */
 .container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 30px;
-    align-items: flex-start;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: start;
 }
-/* ----- Contenido Square Izquierda ----- */
-main {
+
+/* Restaurant info section styling */
+#restaurant-info {
+    grid-column: 1;
     background: #fff;
     padding: 30px;
     border-radius: 15px;
-    width: 600px;
-    margin: 30px 30px 30px 0;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
-/***-- Contenido Square Derecha --***/
-#user-bookings {
+
+/* Address section styling - fixed position on right */
+#address-section, #restaurant-form-section {
+    grid-column: 2;
+    position: sticky;
+    top: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+/* Address and Restaurant Form alignment */
+#restaurant-form-section {
+    margin-top: 20px;
+}
+
+/* Addresses container */
+#addresses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Individual address card styling */
+.booking-card {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.booking-card strong {
+    color: #333;
+}
+
+/* Address form section */
+#address-form-section {
+    grid-column: 1;
     background: #fff;
     padding: 30px;
     border-radius: 15px;
-    width: 50%;
-    margin: 30px 30px 30px 0;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);    
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 }
-
 
 hr {
     border: 0;
@@ -34,17 +80,9 @@ hr {
     margin: 20px 0;
 }
 
-
-/* ----- Secctions ----- */
+/* ----- Sections ----- */
 section {
     margin-bottom: 20px;
-}
-
-hr {
-    border: 0;
-    height: 1px;
-    background: #ddd;
-    margin: 20px 0;
 }
 
 /* ----- Forms----- */
@@ -64,6 +102,7 @@ input {
     border-radius: 5px;
     font-size: 16px;
     transition: 0.3s;
+    width: 100%;
 }
 
 input:focus {
@@ -71,7 +110,7 @@ input:focus {
     outline: none;
 }
 
-/* ----- Bottons ----- */
+/* ----- Buttons ----- */
 button {
     background: #db4242;
     color: #fff;
@@ -82,14 +121,30 @@ button {
     border-radius: 5px;
     margin-top: 10px;
     transition: 0.3s;
+    width: 100%;
 }
 
 button:hover {
-    background:#db4242;
+    background: #b83232;
 }
 
-/* ----- Responsive ----- */
-@media (max-width: 768px) {
+/* Responsive design */
+@media (max-width: 992px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    #address-section, #restaurant-form-section {
+        grid-column: 1;
+        position: static;
+        margin-top: 20px;
+        max-height: none;
+    }
+
+    #address-form-section {
+        margin-top: 20px;
+    }
+
     main {
         width: 90%;
         padding: 15px;
@@ -102,31 +157,19 @@ button:hover {
     nav a {
         margin: 5px 0;
     }
-}
 
-/*user information design*------------------------**/
+    /* Bookings section styling - similar to address section */
+    #bookings-section {
+        grid-column: 2;
+        position: sticky;
+        top: 20px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        margin-top: 20px;
+    }
 
-.user-info-container {
-    width: 300px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    text-align: center;
-}
-.user-info-container label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-}
-.user-info-container input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-.user-info-container label[for="user-info"] {
-    margin-bottom: 20px;
-    font-size: 1.2em;
 }
