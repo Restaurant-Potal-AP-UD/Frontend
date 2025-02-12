@@ -4,8 +4,11 @@ WORKDIR /app
 
 LABEL author = "Alicia Pineda Quiroga"
 
-COPY package*.json ./
+COPY ./src .
 
 RUN npm install
-CMD ["npm", "start"]
+
 EXPOSE 3000
+
+CMD ["npm", "start"]
+

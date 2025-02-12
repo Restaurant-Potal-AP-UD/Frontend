@@ -1,0 +1,8 @@
+services:
+  frontend:
+    container_name: frontend-service
+    build: 
+      context: .
+      dockerfile: Dockerfile.js
+    ports:
+      - "3000:3000"
